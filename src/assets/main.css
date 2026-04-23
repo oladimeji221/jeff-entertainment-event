@@ -1,0 +1,146 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html { scroll-behavior: smooth; }
+  body {
+    @apply bg-dark-950 text-white;
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  * { box-sizing: border-box; }
+}
+
+@layer components {
+  /* ── Fire CTA button ── */
+  .btn-fire {
+    @apply inline-flex items-center justify-center gap-2 font-bold rounded-full transition-all duration-300 cursor-pointer text-black;
+    background: linear-gradient(135deg, #FF6B00, #FF9A00, #FFD400);
+    box-shadow: 0 0 25px rgba(255, 107, 0, 0.4);
+  }
+  .btn-fire:hover {
+    box-shadow: 0 0 50px rgba(255, 107, 0, 0.7), 0 8px 25px rgba(0,0,0,0.3);
+    transform: translateY(-2px);
+  }
+  .btn-fire:active { transform: translateY(0); }
+
+  /* ── Ice outline button ── */
+  .btn-ice {
+    @apply inline-flex items-center justify-center gap-2 font-bold rounded-full transition-all duration-300 cursor-pointer;
+    border: 2px solid rgba(0, 212, 245, 0.6);
+    color: #00D4F5;
+    background: rgba(0, 212, 245, 0.05);
+  }
+  .btn-ice:hover {
+    background: rgba(0, 212, 245, 0.15);
+    border-color: #00D4F5;
+    box-shadow: 0 0 30px rgba(0, 212, 245, 0.3);
+    transform: translateY(-2px);
+  }
+
+  /* Legacy alias used in PurchaseModal */
+  .btn-gold { @apply btn-fire; }
+  .btn-outline-gold { @apply btn-ice; }
+
+  /* ── Section title ── */
+  .section-title {
+    @apply font-display font-bold;
+    background: linear-gradient(135deg, #FFD400 0%, #FF9A00 50%, #FF6B00 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* ── Ice section title variant ── */
+  .section-title-ice {
+    @apply font-display font-bold;
+    background: linear-gradient(135deg, #A8F0FF 0%, #4DD9F5 50%, #00D4F5 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .gradient-text { @apply section-title; }
+
+  .card-dark {
+    @apply bg-dark-700 border border-dark-500 rounded-2xl;
+  }
+
+  .glow-fire { box-shadow: 0 0 30px rgba(255,107,0,0.25), 0 0 60px rgba(255,107,0,0.1); }
+  .glow-ice  { box-shadow: 0 0 30px rgba(0,212,245,0.25), 0 0 60px rgba(0,212,245,0.1); }
+  /* Legacy alias */
+  .glow-gold { @apply glow-fire; }
+
+  .divider-fire { height: 2px; background: linear-gradient(90deg, transparent, #FF9A00, transparent); }
+  .divider-ice  { height: 2px; background: linear-gradient(90deg, transparent, #00D4F5, transparent); }
+  /* Legacy alias */
+  .divider-gold { @apply divider-fire; }
+}
+
+/* ── Fire rising particles ── */
+@keyframes fireRiseParticle {
+  0%   { transform: translateY(0) scale(1); opacity: 0; }
+  8%   { opacity: 0.9; }
+  85%  { opacity: 0.5; }
+  100% { transform: translateY(-110vh) scale(0) translateX(var(--drift, 30px)); opacity: 0; }
+}
+
+/* ── Ice drifting particles ── */
+@keyframes iceDriftParticle {
+  0%   { transform: translateY(-10px) rotate(0deg) scale(0); opacity: 0; }
+  8%   { opacity: 0.8; transform: scale(1) rotate(45deg); }
+  85%  { opacity: 0.4; }
+  100% { transform: translateY(110vh) rotate(720deg) scale(0.2); opacity: 0; }
+}
+
+/* ── Fire glow pulse ── */
+@keyframes fireGlowPulse {
+  0%, 100% { opacity: 0.55; }
+  50%       { opacity: 0.9; }
+}
+
+/* ── Scroll reveal ── */
+.reveal {
+  opacity: 0;
+  transform: translateY(32px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+/* ── Shimmer ── */
+.shimmer-text {
+  background: linear-gradient(90deg, #FF6B00 0%, #FFD400 40%, #FF9A00 60%, #FF6B00 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer 2.5s linear infinite;
+}
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
+}
+
+/* ── Custom scrollbar ── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #0a0602; }
+::-webkit-scrollbar-thumb { background: #FF9A00; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #FFD400; }
+
+/* ── Modal backdrop ── */
+.modal-backdrop { backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+
+/* ── Scanner line ── */
+@keyframes scanLine { 0%, 100% { top: 0; } 50% { top: calc(100% - 2px); } }
+.scan-line { animation: scanLine 2s ease-in-out infinite; }
+
+/* ── 3D scene mouse transition ── */
+.scene-3d { transition: transform 0.08s linear; }
+
+/* ── Print ── */
+@media print {
+  body * { visibility: hidden; }
+  #ticket-card, #ticket-card * { visibility: visible; }
+  #ticket-card { position: absolute; left: 0; top: 0; width: 100%; }
+}
