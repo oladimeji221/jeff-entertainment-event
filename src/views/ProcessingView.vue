@@ -41,6 +41,10 @@ async function tryVerify() {
   }
 }
 
+function copyRef() {
+  navigator.clipboard.writeText(reference).then(() => alert('Copied!'))
+}
+
 onMounted(() => {
   if (!reference) { router.push('/'); return }
   tryVerify()
@@ -92,7 +96,7 @@ onMounted(() => {
           <div class="text-gold text-xs tracking-widest uppercase mb-2">Save this reference</div>
           <div class="font-mono text-white text-lg font-bold break-all">{{ reference }}</div>
           <button
-            @click="navigator.clipboard.writeText(reference).then(() => alert('Copied!'))"
+            @click="copyRef()"
             class="mt-3 text-xs text-gray-500 hover:text-gold transition-colors underline"
           >
             Copy to clipboard
