@@ -78,7 +78,10 @@ function scrollTo(id: string) {
         <div class="flex items-center gap-2">
           <span>🔥 Fire &amp; Ice Escape</span>
           <span>·</span>
-          <span>Powered by <span class="text-fire-mid">Paystack</span></span>
+          <a href="https://wa.me/2347087104333" target="_blank"
+            class="hover:text-fire-mid transition-colors">
+            Developed by <span class="text-fire-mid font-semibold">GecTechs</span>
+          </a>
         </div>
       </div>
     </div>
