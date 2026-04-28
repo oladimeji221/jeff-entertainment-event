@@ -163,7 +163,7 @@ onUnmounted(() => stopCamera())
     <div v-if="!authed" class="min-h-screen flex items-center justify-center px-4">
       <div class="w-full max-w-sm">
         <div class="text-center mb-10">
-          <img src="/jeff.jpg" alt="Jeff Entertainment" class="h-16 w-auto object-contain mx-auto mb-4 shadow-lg" />
+          <img src="/logo.jpg" alt="Jeff Entertainment" class="h-16 w-auto object-contain mx-auto mb-4 shadow-lg" />
           <h1 class="font-display font-bold text-2xl text-white mb-1">Admin Access</h1>
           <p class="text-gray-500 text-sm">Jeff Entertainment — Ticket Scanner</p>
         </div>
@@ -198,7 +198,7 @@ onUnmounted(() => stopCamera())
       <!-- Header -->
       <div class="flex items-center justify-between mb-8">
         <div class="flex items-center gap-3">
-          <img src="/jeff.jpg" alt="Jeff Entertainment" class="h-9 w-auto object-contain" />
+          <img src="/logo.jpg" alt="Jeff Entertainment" class="h-9 w-auto object-contain" />
           <div>
             <div class="font-bold text-white text-sm">Ticket Scanner</div>
             <div class="text-gray-600 text-xs">Jeff Entertainment</div>

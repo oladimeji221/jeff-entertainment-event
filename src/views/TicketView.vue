@@ -90,7 +90,7 @@ async function downloadTicket() {
         ← Back to home
       </button>
       <div class="flex items-center gap-3">
-        <img src="/jeff.jpg" alt="Jeff Entertainment" class="h-8 w-auto object-contain" />
+        <img src="/logo.jpg" alt="Jeff Entertainment" class="h-8 w-auto object-contain" />
         <span class="font-display text-sm font-bold gradient-text">Jeff Entertainment</span>
       </div>
     </div>
@@ -136,7 +136,7 @@ async function downloadTicket() {
           <div class="flex items-start justify-between mb-6">
             <div>
               <div class="flex items-center gap-2 mb-2">
-                <img src="/jeff.jpg" alt="Jeff Entertainment" class="h-8 w-auto object-contain" />
+                <img src="/logo.jpg" alt="Jeff Entertainment" class="h-8 w-auto object-contain" />
                 <span class="font-display font-bold text-white text-sm">{{ EVENT.organizerName }}</span>
               </div>
               <div

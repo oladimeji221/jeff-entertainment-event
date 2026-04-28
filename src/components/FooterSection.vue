@@ -28,7 +28,7 @@ function scrollTo(id: string) {
         <!-- Brand -->
         <div class="lg:col-span-2">
           <div class="flex items-center gap-3 mb-4">
-            <img src="/jeff.jpg" alt="Jeff Entertainment" class="h-12 w-auto object-contain shadow-lg" />
+            <img src="/logo.jpg" alt="Jeff Entertainment" class="h-12 w-auto object-contain shadow-lg" />
             <div>
               <div class="font-display font-bold text-xl text-white">{{ EVENT.organizerName }}</div>
               <div class="text-gray-600 text-xs tracking-wider">We Move Different</div>

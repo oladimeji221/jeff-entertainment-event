@@ -1,12 +1,10 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
-import { useRouter } from 'vue-router'
 import { EVENT } from '../config/event'
 import type { TicketType } from '../config/event'
 
 const props = defineProps<{ visible: boolean; initialType: TicketType }>()
 const emit = defineEmits<{ (e: 'close'): void }>()
-const router = useRouter()
 
 watch(() => props.visible, v => { if (v) error.value = '' })
 
@@ -58,7 +56,8 @@ async function pay() {
     },
     onSuccess: (transaction: { reference: string }) => {
       emit('close')
-      router.push({ name: 'processing', query: { ref: transaction.reference } })
+      // Use location.href — router.push is unreliable inside Paystack's iframe callback
+      window.location.href = `/processing?ref=${transaction.reference}`
     },
     onCancel: () => {},
   })
