@@ -54,12 +54,11 @@ async function pay() {
         { display_name: 'Quantity',     variable_name: 'quantity',     value: String(form.value.quantity) },
       ],
     },
-    onSuccess: (transaction: { reference: string }) => {
+    callback: (response: { reference: string }) => {
       emit('close')
-      // Use location.href — router.push is unreliable inside Paystack's iframe callback
-      window.location.href = `/processing?ref=${transaction.reference}`
+      window.location.href = `/processing?ref=${response.reference}`
     },
-    onCancel: () => {},
+    onClose: () => {},
   })
   handler.openIframe()
 }
