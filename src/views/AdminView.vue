@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onUnmounted } from 'vue'
+import { ref, computed, onUnmounted } from 'vue'
 import jsQR from 'jsqr'
 
 // ── Auth ──────────────────────────────────────────────────
@@ -84,7 +84,7 @@ async function loadTickets() {
   }
 }
 
-function filteredTickets() {
+const filteredTickets = computed(() => {
   const q = search.value.toLowerCase()
   if (!q) return tickets.value
   return tickets.value.filter(t =>
@@ -93,10 +93,10 @@ function filteredTickets() {
     t.ticket_id.toLowerCase().includes(q) ||
     t.paystack_reference.toLowerCase().includes(q)
   )
-}
+})
 
-function totalRevenue() { return tickets.value.reduce((s, t) => s + t.total_amount, 0) }
-function scannedCount() { return tickets.value.filter(t => t.is_scanned).length }
+const totalRevenue = computed(() => tickets.value.reduce((s, t) => s + t.total_amount, 0))
+const scannedCount = computed(() => tickets.value.filter(t => t.is_scanned).length)
 
 // ── Camera ────────────────────────────────────────────────
 async function startCamera() {
@@ -337,15 +337,15 @@ onUnmounted(() => stopCamera())
           </div>
           <div class="card-dark p-4 rounded-2xl">
             <div class="text-gray-500 text-xs uppercase tracking-wider mb-1">Total Revenue</div>
-            <div class="text-2xl font-black text-white">{{ formatPrice(totalRevenue()) }}</div>
+            <div class="text-2xl font-black text-white">{{ formatPrice(totalRevenue) }}</div>
           </div>
           <div class="card-dark p-4 rounded-2xl">
             <div class="text-gray-500 text-xs uppercase tracking-wider mb-1">Scanned In</div>
-            <div class="text-2xl font-black text-green-400">{{ scannedCount() }}</div>
+            <div class="text-2xl font-black text-green-400">{{ scannedCount }}</div>
           </div>
           <div class="card-dark p-4 rounded-2xl">
             <div class="text-gray-500 text-xs uppercase tracking-wider mb-1">Not Yet Scanned</div>
-            <div class="text-2xl font-black text-orange-400">{{ tickets.length - scannedCount() }}</div>
+            <div class="text-2xl font-black text-orange-400">{{ tickets.length - scannedCount }}</div>
           </div>
         </div>
 
@@ -360,7 +360,10 @@ onUnmounted(() => stopCamera())
 
         <!-- Loading / Error -->
         <div v-if="ticketsLoading" class="text-center py-12 text-gray-500">Loading transactions…</div>
-        <div v-else-if="ticketsError" class="text-center py-12 text-red-400">{{ ticketsError }}</div>
+        <div v-else-if="ticketsError" class="text-center py-12">
+          <div class="text-red-400 mb-3">{{ ticketsError }}</div>
+          <button @click="loadTickets" class="text-xs text-orange-400 underline">Try again</button>
+        </div>
 
         <!-- Table -->
         <div v-else class="card-dark rounded-2xl overflow-hidden">
@@ -379,10 +382,10 @@ onUnmounted(() => stopCamera())
                 </tr>
               </thead>
               <tbody>
-                <tr v-if="filteredTickets().length === 0">
+                <tr v-if="filteredTickets.length === 0">
                   <td colspan="8" class="px-4 py-10 text-center text-gray-600">No tickets found</td>
                 </tr>
-                <tr v-for="t in filteredTickets()" :key="t.ticket_id"
+                <tr v-for="t in filteredTickets" :key="t.ticket_id"
                   class="border-b border-dark-700 last:border-0 hover:bg-dark-700/40 transition-colors">
                   <td class="px-4 py-3 font-mono text-orange-400 text-xs">{{ t.ticket_id }}</td>
                   <td class="px-4 py-3 text-white font-medium">{{ t.buyer_name }}</td>
