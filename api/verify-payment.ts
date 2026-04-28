@@ -31,7 +31,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   fields.forEach((f) => { meta[f.variable_name] = f.value })
 
   const supabase = createClient(
-    process.env.SUPABASE_URL!,
+    process.env.VITE_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_KEY!
   )
 
