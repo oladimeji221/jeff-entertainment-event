@@ -29,10 +29,6 @@ function scrollTo(id: string) {
         <div class="lg:col-span-2">
           <div class="flex items-center gap-3 mb-4">
             <img src="/logo.jpg" alt="Jeff Entertainment" class="h-12 w-auto object-contain shadow-lg" />
-            <div>
-              <div class="font-display font-bold text-xl text-white">{{ EVENT.organizerName }}</div>
-              <div class="text-gray-600 text-xs tracking-wider">We Move Different</div>
-            </div>
           </div>
           <p class="text-gray-500 text-sm leading-relaxed max-w-xs mb-2">
             <strong class="text-white">{{ EVENT.eventName }}</strong> — Fire &amp; Ice Escape.<br>
@@ -74,7 +70,7 @@ function scrollTo(id: string) {
       <div class="divider-fire opacity-20 mb-8"></div>
 
       <div class="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-gray-600">
-        <span>© {{ new Date().getFullYear() }} {{ EVENT.organizerName }}. All rights reserved.</span>
+        <span>© {{ new Date().getFullYear() }} Akure Outsiders. All rights reserved.</span>
         <div class="flex items-center gap-2">
           <span>🔥 Fire &amp; Ice Escape</span>
           <span>·</span>

@@ -35,10 +35,6 @@ function scrollTo(id: string) {
         <button @click="scrollTo('hero')" class="flex items-center gap-3 group">
           <img src="/logo.jpg" alt="Jeff Entertainment"
             class="h-10 w-auto object-contain shadow-lg group-hover:scale-110 transition-transform" />
-          <span class="hidden sm:block font-display font-black text-base tracking-wide"
-            style="background:linear-gradient(135deg,#FFD400,#FF9A00,#FF6B00); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;">
-            {{ EVENT.organizerName }}
-          </span>
         </button>
 
         <!-- Desktop links -->

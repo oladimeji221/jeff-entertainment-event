@@ -91,7 +91,6 @@ async function downloadTicket() {
       </button>
       <div class="flex items-center gap-3">
         <img src="/logo.jpg" alt="Jeff Entertainment" class="h-8 w-auto object-contain" />
-        <span class="font-display text-sm font-bold gradient-text">Jeff Entertainment</span>
       </div>
     </div>
 
@@ -137,7 +136,6 @@ async function downloadTicket() {
             <div>
               <div class="flex items-center gap-2 mb-2">
                 <img src="/logo.jpg" alt="Jeff Entertainment" class="h-8 w-auto object-contain" />
-                <span class="font-display font-bold text-white text-sm">{{ EVENT.organizerName }}</span>
               </div>
               <div
                 class="text-xs font-bold tracking-[0.3em] uppercase px-3 py-1 rounded-full border inline-block"

@@ -159,6 +159,19 @@ async function handleScanTicket(req, res) {
   return send(res, 200, { ticket: { ...ticket, is_scanned: true } })
 }
 
+async function handleGetTickets(req, res) {
+  const token = req.headers['x-admin-token']
+  if (!verifyToken(token)) return send(res, 401, { error: 'Unauthorized' })
+
+  const { data, error } = await supabase()
+    .from('tickets')
+    .select('*')
+    .order('created_at', { ascending: false })
+
+  if (error) return send(res, 500, { error: 'DB error' })
+  return send(res, 200, { tickets: data })
+}
+
 async function handleVerifyAdmin(req, res) {
   const { password } = await readBody(req)
   if (!ADMIN_SECRET || !password) return send(res, 400, { ok: false })
@@ -185,6 +198,7 @@ const server = http.createServer(async (req, res) => {
   try {
     if (path === '/api/verify-payment' && req.method === 'POST') return await handleVerifyPayment(req, res)
     if (path === '/api/get-ticket'     && req.method === 'GET')  return await handleGetTicket(req, res, query)
+    if (path === '/api/get-tickets'    && req.method === 'GET')  return await handleGetTickets(req, res)
     if (path === '/api/scan-ticket'    && req.method === 'POST') return await handleScanTicket(req, res)
     if (path === '/api/verify-admin'   && req.method === 'POST') return await handleVerifyAdmin(req, res)
     send(res, 404, { error: 'Not found' })
