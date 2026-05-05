@@ -1,5 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 import { createClient } from '@supabase/supabase-js'
+import crypto from 'crypto'
 
 function generateTicketId(): string {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
@@ -8,12 +9,26 @@ function generateTicketId(): string {
   return id
 }
 
+function verifyToken(token: string): boolean {
+  const secret = process.env.ADMIN_SECRET!
+  // Token format: timestamp:hmac — valid for 24 hours
+  const [timestamp, hmac] = token.split(':')
+  if (!timestamp || !hmac) return false
+  if (Date.now() - parseInt(timestamp) > 86400000) return false
+  const expected = crypto.createHmac('sha256', secret).update(timestamp).digest('hex')
+  try {
+    return crypto.timingSafeEqual(Buffer.from(hmac, 'hex'), Buffer.from(expected, 'hex'))
+  } catch {
+    return false
+  }
+}
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
 
   // Verify admin token
-  const adminToken = req.headers['x-admin-token'] as string
-  if (!adminToken || adminToken !== process.env.ADMIN_TOKEN) {
+  const token = req.headers['x-admin-token'] as string
+  if (!token || !verifyToken(token)) {
     return res.status(401).json({ error: 'Unauthorized' })
   }
 
