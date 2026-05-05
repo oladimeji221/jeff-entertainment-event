@@ -4,6 +4,7 @@ import Navbar from '../components/Navbar.vue'
 import HeroSection from '../components/HeroSection.vue'
 import EventDetails from '../components/EventDetails.vue'
 import CountdownTimer from '../components/CountdownTimer.vue'
+import FlyerSection from '../components/FlyerSection.vue'
 import LineupSection from '../components/LineupSection.vue'
 import TicketSection from '../components/TicketSection.vue'
 import FaqSection from '../components/FaqSection.vue'
@@ -40,6 +41,7 @@ onMounted(() => {
     <HeroSection @open-tickets="openModal()" />
     <EventDetails />
     <CountdownTimer />
+    <FlyerSection />
     <LineupSection />
     <TicketSection @open-modal="openModal" />
     <FaqSection />

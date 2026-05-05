@@ -14,10 +14,10 @@ export const EVENT = {
     'Ikogosi Warm Springs in Ekiti State — where hot and cold springs meet ' +
     'in the most magical natural phenomenon. Nature + Lifestyle + Nightlife, all in one trip.',
 
-  date:        'TBA',
-  displayDate: 'Date To Be Announced',
+  date:        '2026-05-23',
+  displayDate: '23rd May, 2026',
   time:        'TBA',
-  doorsOpen:   'TBA',
+  doorsOpen:   'All Day',
   venue:       'Ikogosi Warm Springs',
   address:     'Ikogosi-Ekiti, Ekiti State, Nigeria',
   city:        'Ekiti State, Nigeria',
