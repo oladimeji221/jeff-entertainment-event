@@ -7,7 +7,7 @@ const password = ref('')
 const authed = ref(false)
 const authError = ref('')
 const authLoading = ref(false)
-const activeTab = ref<'scanner' | 'dashboard'>('scanner')
+const activeTab = ref<'scanner' | 'dashboard' | 'create'>('scanner')
 
 async function login() {
   authLoading.value = true
@@ -190,6 +190,68 @@ function formatDate(s: string) {
   return new Date(s).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
 }
 
+// ── Create Ticket (Manual/Cash) ───────────────────────────
+const createForm = ref({
+  buyer_name: '',
+  buyer_email: '',
+  buyer_phone: '',
+  ticket_type: 'regular',
+  quantity: 1,
+  unit_price: 10000
+})
+const creating = ref(false)
+const createError = ref('')
+const createSuccess = ref(false)
+const createdTicketId = ref('')
+
+async function createTicket() {
+  creating.value = true
+  createError.value = ''
+  createSuccess.value = false
+
+  try {
+    const token = sessionStorage.getItem('admin_token') || ''
+    const res = await fetch('/api/create-manual-ticket', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-admin-token': token,
+      },
+      body: JSON.stringify(createForm.value),
+    })
+
+    const data = await res.json()
+
+    if (!res.ok || data.error) {
+      throw new Error(data.error || 'Failed to create ticket')
+    }
+
+    createdTicketId.value = data.ticketId
+    createSuccess.value = true
+
+    // Reset form
+    createForm.value = {
+      buyer_name: '',
+      buyer_email: '',
+      buyer_phone: '',
+      ticket_type: 'regular',
+      quantity: 1,
+      unit_price: 10000
+    }
+
+    // Reload tickets in dashboard
+    loadTickets()
+  } catch (e: any) {
+    createError.value = e.message || 'Network error. Please try again.'
+  } finally {
+    creating.value = false
+  }
+}
+
+function viewCreatedTicket() {
+  window.open(`/ticket/${createdTicketId.value}`, '_blank')
+}
+
 onUnmounted(() => stopCamera())
 </script>
 
@@ -242,6 +304,10 @@ onUnmounted(() => stopCamera())
           <button @click="activeTab = 'dashboard'; loadTickets()"
             :class="['px-4 py-1.5 rounded-lg text-xs font-bold tracking-wide transition-all', activeTab === 'dashboard' ? 'bg-dark-600 text-white' : 'text-gray-500 hover:text-gray-300']">
             📊 Dashboard
+          </button>
+          <button @click="activeTab = 'create'"
+            :class="['px-4 py-1.5 rounded-lg text-xs font-bold tracking-wide transition-all', activeTab === 'create' ? 'bg-dark-600 text-white' : 'text-gray-500 hover:text-gray-300']">
+            ➕ Create Ticket
           </button>
         </div>
       </div>
@@ -326,8 +392,108 @@ onUnmounted(() => stopCamera())
         </div>
       </div>
 
+      <!-- ── CREATE TICKET TAB ── -->
+      <div v-else-if="activeTab === 'create'">
+        <div class="max-w-2xl mx-auto">
+          <!-- Success message -->
+          <div v-if="createSuccess" class="mb-6 p-5 bg-green-900/30 border border-green-700/40 rounded-2xl">
+            <div class="flex items-center gap-3 mb-4">
+              <span class="text-3xl">🎉</span>
+              <div>
+                <div class="text-green-400 font-bold text-lg">Ticket Created Successfully!</div>
+                <div class="text-gray-400 text-sm">The ticket has been generated and is ready to view.</div>
+              </div>
+            </div>
+            <div class="flex gap-3">
+              <button @click="viewCreatedTicket" class="btn-fire py-2.5 px-5 text-sm font-bold">
+                🎫 View Ticket
+              </button>
+              <button @click="createSuccess = false" class="px-5 py-2.5 bg-dark-700 border border-dark-600 rounded-xl text-white hover:bg-dark-600 text-sm transition-colors">
+                Create Another
+              </button>
+            </div>
+          </div>
+
+          <!-- Form -->
+          <div class="card-dark p-8">
+            <div class="mb-6">
+              <h2 class="text-white font-bold text-xl mb-1">Create Manual Ticket</h2>
+              <p class="text-gray-500 text-sm">For cash payments and walk-in customers</p>
+            </div>
+
+            <form @submit.prevent="createTicket" class="space-y-5">
+              <!-- Buyer Name -->
+              <div>
+                <label class="text-gray-400 text-xs tracking-wider uppercase block mb-2">Full Name *</label>
+                <input v-model="createForm.buyer_name" type="text" required
+                  class="w-full bg-dark-600 border border-dark-500 rounded-xl px-4 py-3 text-white placeholder-gray-600 outline-none focus:border-orange-500/50 transition-colors"
+                  placeholder="Enter buyer's full name" />
+              </div>
+
+              <!-- Buyer Email -->
+              <div>
+                <label class="text-gray-400 text-xs tracking-wider uppercase block mb-2">Email Address *</label>
+                <input v-model="createForm.buyer_email" type="email" required
+                  class="w-full bg-dark-600 border border-dark-500 rounded-xl px-4 py-3 text-white placeholder-gray-600 outline-none focus:border-orange-500/50 transition-colors"
+                  placeholder="buyer@example.com" />
+              </div>
+
+              <!-- Buyer Phone -->
+              <div>
+                <label class="text-gray-400 text-xs tracking-wider uppercase block mb-2">Phone Number</label>
+                <input v-model="createForm.buyer_phone" type="tel"
+                  class="w-full bg-dark-600 border border-dark-500 rounded-xl px-4 py-3 text-white placeholder-gray-600 outline-none focus:border-orange-500/50 transition-colors"
+                  placeholder="080XXXXXXXX (optional)" />
+              </div>
+
+              <!-- Ticket Type -->
+              <div>
+                <label class="text-gray-400 text-xs tracking-wider uppercase block mb-2">Ticket Type *</label>
+                <select v-model="createForm.ticket_type" required
+                  class="w-full bg-dark-600 border border-dark-500 rounded-xl px-4 py-3 text-white outline-none focus:border-orange-500/50 transition-colors">
+                  <option value="regular">General Admission</option>
+                  <option value="vip">VIP</option>
+                  <option value="vvip">VVIP</option>
+                </select>
+              </div>
+
+              <!-- Quantity & Unit Price -->
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label class="text-gray-400 text-xs tracking-wider uppercase block mb-2">Quantity *</label>
+                  <input v-model.number="createForm.quantity" type="number" min="1" required
+                    class="w-full bg-dark-600 border border-dark-500 rounded-xl px-4 py-3 text-white placeholder-gray-600 outline-none focus:border-orange-500/50 transition-colors" />
+                </div>
+                <div>
+                  <label class="text-gray-400 text-xs tracking-wider uppercase block mb-2">Unit Price (₦) *</label>
+                  <input v-model.number="createForm.unit_price" type="number" min="1" required
+                    class="w-full bg-dark-600 border border-dark-500 rounded-xl px-4 py-3 text-white placeholder-gray-600 outline-none focus:border-orange-500/50 transition-colors" />
+                </div>
+              </div>
+
+              <!-- Total Amount Display -->
+              <div class="p-4 bg-dark-700/50 border border-dark-500 rounded-xl">
+                <div class="text-gray-500 text-xs uppercase tracking-wider mb-1">Total Amount</div>
+                <div class="text-white font-black text-2xl">{{ formatPrice(createForm.quantity * createForm.unit_price) }}</div>
+              </div>
+
+              <!-- Error -->
+              <div v-if="createError" class="p-4 bg-red-900/30 border border-red-700/40 rounded-xl text-red-400 text-sm">
+                {{ createError }}
+              </div>
+
+              <!-- Submit Button -->
+              <button type="submit" :disabled="creating"
+                class="btn-fire w-full py-3.5 font-bold disabled:opacity-70">
+                {{ creating ? 'Creating Ticket...' : '✓ Create Ticket' }}
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+
       <!-- ── DASHBOARD TAB ── -->
-      <div v-else>
+      <div v-else-if="activeTab === 'dashboard'">
 
         <!-- Stats row -->
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">

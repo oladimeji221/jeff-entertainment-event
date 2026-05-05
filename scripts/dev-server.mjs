@@ -182,6 +182,71 @@ async function handleVerifyAdmin(req, res) {
   return send(res, 200, { ok: true, token: generateToken() })
 }
 
+async function handleCreateManualTicket(req, res) {
+  const token = req.headers['x-admin-token']
+  if (!verifyToken(token)) return send(res, 401, { error: 'Unauthorized' })
+
+  const { buyer_name, buyer_email, buyer_phone, ticket_type, quantity, unit_price } = await readBody(req)
+
+  // Validate required fields
+  if (!buyer_name || !buyer_email || !ticket_type || !quantity || !unit_price) {
+    return send(res, 400, { error: 'Missing required fields' })
+  }
+
+  // Validate ticket type
+  if (!['regular', 'vip', 'vvip'].includes(ticket_type)) {
+    return send(res, 400, { error: 'Invalid ticket type' })
+  }
+
+  // Validate quantity
+  const qty = parseInt(quantity)
+  if (isNaN(qty) || qty < 1) {
+    return send(res, 400, { error: 'Invalid quantity' })
+  }
+
+  // Validate unit price
+  const price = parseFloat(unit_price)
+  if (isNaN(price) || price <= 0) {
+    return send(res, 400, { error: 'Invalid price' })
+  }
+
+  const db = supabase()
+
+  // Generate unique ticket ID (retry if collision)
+  let ticketId = ''
+  for (let attempt = 0; attempt < 5; attempt++) {
+    const candidate = generateTicketId()
+    const { data } = await db.from('tickets').select('ticket_id').eq('ticket_id', candidate).single()
+    if (!data) { ticketId = candidate; break }
+  }
+  if (!ticketId) return send(res, 500, { error: 'Could not generate ticket ID' })
+
+  const total = price * qty
+
+  // Generate a unique reference for manual tickets
+  const manualReference = `MANUAL-${ticketId}-${Date.now()}`
+
+  const { error } = await db.from('tickets').insert({
+    ticket_id: ticketId,
+    buyer_name,
+    buyer_email,
+    buyer_phone: buyer_phone || '',
+    ticket_type,
+    quantity: qty,
+    unit_price: price,
+    total_amount: total,
+    paystack_reference: manualReference,
+    payment_status: 'paid',
+  })
+
+  if (error) {
+    console.error('DB insert error:', error)
+    return send(res, 500, { error: 'Failed to save ticket' })
+  }
+
+  return send(res, 200, { ticketId })
+}
+
 // ── Server ────────────────────────────────────────────────────────────────────
 
 const server = http.createServer(async (req, res) => {
@@ -196,11 +261,12 @@ const server = http.createServer(async (req, res) => {
   console.log(`[api] ${req.method} ${path}`)
 
   try {
-    if (path === '/api/verify-payment' && req.method === 'POST') return await handleVerifyPayment(req, res)
-    if (path === '/api/get-ticket'     && req.method === 'GET')  return await handleGetTicket(req, res, query)
-    if (path === '/api/get-tickets'    && req.method === 'GET')  return await handleGetTickets(req, res)
-    if (path === '/api/scan-ticket'    && req.method === 'POST') return await handleScanTicket(req, res)
-    if (path === '/api/verify-admin'   && req.method === 'POST') return await handleVerifyAdmin(req, res)
+    if (path === '/api/verify-payment'        && req.method === 'POST') return await handleVerifyPayment(req, res)
+    if (path === '/api/get-ticket'            && req.method === 'GET')  return await handleGetTicket(req, res, query)
+    if (path === '/api/get-tickets'           && req.method === 'GET')  return await handleGetTickets(req, res)
+    if (path === '/api/scan-ticket'           && req.method === 'POST') return await handleScanTicket(req, res)
+    if (path === '/api/verify-admin'          && req.method === 'POST') return await handleVerifyAdmin(req, res)
+    if (path === '/api/create-manual-ticket'  && req.method === 'POST') return await handleCreateManualTicket(req, res)
     send(res, 404, { error: 'Not found' })
   } catch (err) {
     console.error(err)
@@ -210,8 +276,9 @@ const server = http.createServer(async (req, res) => {
 
 server.listen(PORT, () => {
   console.log(`\n✅  Local API server running on http://localhost:${PORT}`)
-  console.log(`   /api/verify-payment  POST`)
-  console.log(`   /api/get-ticket      GET`)
-  console.log(`   /api/scan-ticket     POST`)
-  console.log(`   /api/verify-admin    POST\n`)
+  console.log(`   /api/verify-payment        POST`)
+  console.log(`   /api/get-ticket            GET`)
+  console.log(`   /api/scan-ticket           POST`)
+  console.log(`   /api/verify-admin          POST`)
+  console.log(`   /api/create-manual-ticket  POST\n`)
 })
