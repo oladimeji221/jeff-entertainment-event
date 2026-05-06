@@ -65,16 +65,56 @@ async function downloadTicket() {
   downloading.value = true
   try {
     const el = document.getElementById('ticket-card')!
+
+    // First, try to load external images
+    const images = el.querySelectorAll('img')
+    await Promise.all(
+      Array.from(images).map((img: any) => {
+        return new Promise((resolve) => {
+          if (img.complete) {
+            resolve(true)
+          } else {
+            img.onload = () => resolve(true)
+            img.onerror = () => resolve(false)
+          }
+        })
+      })
+    )
+
     const canvas = await html2canvas(el, {
-      backgroundColor: null,
-      scale: 3,
+      backgroundColor: '#0a0a0a',
+      scale: 2,
       useCORS: true,
-      logging: false,
+      allowTaint: false,
+      logging: true,
+      imageTimeout: 15000,
+      onclone: (clonedDoc) => {
+        const clonedEl = clonedDoc.getElementById('ticket-card')
+        if (clonedEl) {
+          clonedEl.style.display = 'block'
+        }
+      }
     })
-    const link = document.createElement('a')
-    link.download = `JeffEntertainment-${ticket.value.ticket_id}.png`
-    link.href = canvas.toDataURL('image/png')
-    link.click()
+
+    // Convert canvas to blob for better compatibility
+    canvas.toBlob((blob) => {
+      if (!blob) {
+        throw new Error('Failed to create image blob')
+      }
+      const url = URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.download = `Ticket-${ticket.value!.ticket_id}.png`
+      link.href = url
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+
+      // Clean up
+      setTimeout(() => URL.revokeObjectURL(url), 1000)
+    }, 'image/png', 0.95)
+  } catch (error) {
+    console.error('Download error:', error)
+    alert('Download failed. Please use the Print button (🖨️) or take a screenshot of the ticket instead.')
   } finally {
     downloading.value = false
   }
@@ -237,6 +277,7 @@ async function downloadTicket() {
 
       <p class="text-gray-600 text-xs mt-4 text-center max-w-sm">
         Keep this ticket safe. Present the QR code at the entry gate. Each QR code can only be scanned once.
+        <br><span class="text-gray-700 mt-1 inline-block">Tip: If download fails, use Print or take a screenshot.</span>
       </p>
     </template>
   </div>
