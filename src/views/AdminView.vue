@@ -191,18 +191,27 @@ function formatDate(s: string) {
 }
 
 // ── Create Ticket (Manual/Cash) ───────────────────────────
+const ticketPrices: Record<string, number> = {
+  regular: 25000,
+  vip: 40000
+}
+
 const createForm = ref({
   buyer_name: '',
   buyer_email: '',
   buyer_phone: '',
   ticket_type: 'regular',
   quantity: 1,
-  unit_price: 10000
+  unit_price: 25000
 })
 const creating = ref(false)
 const createError = ref('')
 const createSuccess = ref(false)
 const createdTicketId = ref('')
+
+function updatePrice() {
+  createForm.value.unit_price = ticketPrices[createForm.value.ticket_type] || 25000
+}
 
 async function createTicket() {
   creating.value = true
@@ -452,11 +461,10 @@ onUnmounted(() => stopCamera())
               <!-- Ticket Type -->
               <div>
                 <label class="text-gray-400 text-xs tracking-wider uppercase block mb-2">Ticket Type *</label>
-                <select v-model="createForm.ticket_type" required
+                <select v-model="createForm.ticket_type" @change="updatePrice" required
                   class="w-full bg-dark-600 border border-dark-500 rounded-xl px-4 py-3 text-white outline-none focus:border-orange-500/50 transition-colors">
-                  <option value="regular">General Admission</option>
-                  <option value="vip">VIP</option>
-                  <option value="vvip">VVIP</option>
+                  <option value="regular">General Admission (₦25,000)</option>
+                  <option value="vip">VIP (₦40,000)</option>
                 </select>
               </div>
 
