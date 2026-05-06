@@ -287,27 +287,30 @@ onUnmounted(() => stopCamera())
     <div v-else class="max-w-5xl mx-auto px-4 py-8">
 
       <!-- Header -->
-      <div class="flex items-center justify-between mb-6">
-        <div class="flex items-center gap-3">
-          <img src="/logo.jpg" alt="logo" class="h-9 w-auto object-contain" />
-          <div>
-            <div class="font-bold text-white text-sm">Admin Panel</div>
-            <div class="text-gray-600 text-xs">Ikogosi Warm Springs</div>
+      <div class="mb-6">
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center gap-3">
+            <img src="/logo.jpg" alt="logo" class="h-9 w-auto object-contain" />
+            <div>
+              <div class="font-bold text-white text-sm">Admin Panel</div>
+              <div class="text-gray-600 text-xs">Ikogosi Warm Springs</div>
+            </div>
           </div>
         </div>
+
         <!-- Tab switcher -->
-        <div class="flex gap-2 bg-dark-800 p-1 rounded-xl border border-dark-600">
+        <div class="flex gap-2 bg-dark-800 p-1 rounded-xl border border-dark-600 w-full sm:w-auto overflow-x-auto">
           <button @click="activeTab = 'scanner'"
-            :class="['px-4 py-1.5 rounded-lg text-xs font-bold tracking-wide transition-all', activeTab === 'scanner' ? 'bg-dark-600 text-white' : 'text-gray-500 hover:text-gray-300']">
+            :class="['px-3 sm:px-4 py-1.5 rounded-lg text-xs font-bold tracking-wide transition-all whitespace-nowrap', activeTab === 'scanner' ? 'bg-dark-600 text-white' : 'text-gray-500 hover:text-gray-300']">
             📷 Scanner
           </button>
           <button @click="activeTab = 'dashboard'; loadTickets()"
-            :class="['px-4 py-1.5 rounded-lg text-xs font-bold tracking-wide transition-all', activeTab === 'dashboard' ? 'bg-dark-600 text-white' : 'text-gray-500 hover:text-gray-300']">
+            :class="['px-3 sm:px-4 py-1.5 rounded-lg text-xs font-bold tracking-wide transition-all whitespace-nowrap', activeTab === 'dashboard' ? 'bg-dark-600 text-white' : 'text-gray-500 hover:text-gray-300']">
             📊 Dashboard
           </button>
           <button @click="activeTab = 'create'"
-            :class="['px-4 py-1.5 rounded-lg text-xs font-bold tracking-wide transition-all', activeTab === 'create' ? 'bg-dark-600 text-white' : 'text-gray-500 hover:text-gray-300']">
-            ➕ Create Ticket
+            :class="['px-3 sm:px-4 py-1.5 rounded-lg text-xs font-bold tracking-wide transition-all whitespace-nowrap', activeTab === 'create' ? 'bg-dark-600 text-white' : 'text-gray-500 hover:text-gray-300']">
+            ➕ Create
           </button>
         </div>
       </div>
@@ -545,11 +548,12 @@ onUnmounted(() => stopCamera())
                   <th class="px-4 py-3 text-gray-500 font-medium text-xs uppercase tracking-wider">Amount</th>
                   <th class="px-4 py-3 text-gray-500 font-medium text-xs uppercase tracking-wider">Status</th>
                   <th class="px-4 py-3 text-gray-500 font-medium text-xs uppercase tracking-wider">Date</th>
+                  <th class="px-4 py-3 text-gray-500 font-medium text-xs uppercase tracking-wider">Action</th>
                 </tr>
               </thead>
               <tbody>
                 <tr v-if="filteredTickets.length === 0">
-                  <td colspan="8" class="px-4 py-10 text-center text-gray-600">No tickets found</td>
+                  <td colspan="9" class="px-4 py-10 text-center text-gray-600">No tickets found</td>
                 </tr>
                 <tr v-for="t in filteredTickets" :key="t.ticket_id"
                   class="border-b border-dark-700 last:border-0 hover:bg-dark-700/40 transition-colors">
@@ -565,6 +569,12 @@ onUnmounted(() => stopCamera())
                     </span>
                   </td>
                   <td class="px-4 py-3 text-gray-500 text-xs">{{ formatDate(t.created_at) }}</td>
+                  <td class="px-4 py-3">
+                    <a :href="`/ticket/${t.ticket_id}`" target="_blank"
+                      class="text-orange-400 hover:text-orange-300 text-xs font-medium underline">
+                      View
+                    </a>
+                  </td>
                 </tr>
               </tbody>
             </table>
