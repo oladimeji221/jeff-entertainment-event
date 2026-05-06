@@ -30,8 +30,8 @@ const ticketId = computed(() => route.params.id as string)
 
 const typeConfig = {
   regular: { label: 'General Admission', color: '#FF7A00', border: '#FF7A0060' },
-  vip:     { label: 'General Admission', color: '#FF7A00', border: '#FF7A0060' },
-  vvip:    { label: 'General Admission', color: '#FF7A00', border: '#FF7A0060' },
+  vip:     { label: 'VIP', color: '#FFD700', border: '#FFD70060' },
+  vvip:    { label: 'VVIP', color: '#FF4500', border: '#FF450060' },
 }
 
 function formatPrice(n: number) { return EVENT.currency + n.toLocaleString() }
